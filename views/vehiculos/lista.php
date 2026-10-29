@@ -1,1 +1,1 @@
-<div class="table-wrap"><table><thead><tr><?php foreach($campos as $campo): ?><th><?= htmlspecialchars($campo) ?></th><?php endforeach ?><th>Acciones</th></tr></thead><tbody><tr><td colspan="<?= count($campos)+1 ?>"><div class="empty"><span class="empty-icon">▤</span><h3>No hay registros para mostrar</h3><p>Los datos aparecerán aquí cuando se conecte el módulo.</p></div></td></tr></tbody></table></div>
+<?php require __DIR__ . '/../record-list.php'; ?>

@@ -1,1 +1,33 @@
-<?php $registro=true; ?><!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?= $registro?'Crear cuenta':'Iniciar sesión' ?> | Motor Express</title><link rel="stylesheet" href="../assetes/css/estilos.css"></head><body class="auth"><section class="auth-story"><a class="brand" href="login.php"><span class="brand-icon">M↗</span><span>MOTOR <b>EXPRESS</b><small>GESTIÓN DEL TALLER</small></span></a><div><p class="eyebrow">EL MOTOR DE TU DÍA A DÍA</p><h1>Un buen servicio<br>empieza con<br><em>orden.</em></h1><p>Clientes, vehículos y reparaciones.<br>Todo en un mismo lugar.</p><img src="../imagenes/vehiculo.svg" alt="Automóvil Motor Express"></div><small>PRECISIÓN · CONFIANZA · SERVICIO</small></section><main class="auth-main"><div class="auth-card"><p class="eyebrow">BIENVENIDO A MOTOR EXPRESS</p><h2><?= $registro?'Crea tu cuenta':'Volvamos al taller' ?></h2><p><?= $registro?'Completa tus datos para registrarte.':'Ingresa tus datos para continuar.' ?></p><form class="preview-form"><?php if($registro): ?><label>Nombre completo<input required autocomplete="name" placeholder="Tu nombre"></label><?php endif ?><label>Correo electrónico<input type="email" required autocomplete="email" placeholder="nombre@correo.com"></label><label>Contraseña<div class="password-field"><input type="password" required minlength="10" autocomplete="<?= $registro?'new-password':'current-password' ?>" placeholder="<?= $registro?'Mínimo 10 caracteres':'Tu contraseña' ?>"><button type="button" class="password-toggle" aria-label="Mostrar contraseña">Ver</button></div></label><?php if($registro): ?><label>Confirmar contraseña<input type="password" required minlength="10" autocomplete="new-password" placeholder="Repite tu contraseña"></label><?php endif ?><button class="button" type="submit"><?= $registro?'Crear cuenta':'Ingresar' ?> →</button></form><p class="auth-switch"><?= $registro?'¿Ya tienes una cuenta?':'¿Primera vez aquí?' ?> <a href="<?= $registro?'login':'registro' ?>.php"><?= $registro?'Inicia sesión':'Regístrate' ?></a></p><a class="preview-link" href="home.php">Explorar vista previa del panel ↗</a><small class="auth-note">El acceso y el registro aún están pendientes de conexión.</small></div></main><div id="toast" role="status"></div><script src="../assetes/js/app.js"></script></body></html>
+<?php
+require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../controller/AuthController.php';
+
+if (!empty($_SESSION['user']['id'])) {
+    redirect_to('/views/home.php');
+}
+
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf();
+    try {
+        if (($_POST['password'] ?? '') !== ($_POST['password_confirm'] ?? '')) {
+            throw new InvalidArgumentException('Las contraseñas no coinciden.');
+        }
+        (new AuthController())->register(
+            (string) ($_POST['nombre'] ?? ''),
+            (string) ($_POST['email'] ?? ''),
+            (string) ($_POST['password'] ?? '')
+        );
+        flash('success', 'Tu cuenta se creó correctamente. Ya puedes iniciar sesión.');
+        redirect_to('/views/login.php');
+    } catch (InvalidArgumentException $exception) {
+        $error = $exception->getMessage();
+    } catch (PDOException $exception) {
+        error_log('Motor Express register: ' . $exception->getMessage());
+        $error = (string) $exception->getCode() === '23000'
+            ? 'Ya existe una cuenta con ese correo electrónico.'
+            : 'No se pudo completar el registro. Verifica la conexión con la base de datos.';
+    }
+}
+$registro = true;
+require __DIR__ . '/auth-form.php';

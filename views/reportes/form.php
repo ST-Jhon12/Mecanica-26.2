@@ -1,2 +1,3 @@
 <?php
-$pagina='reportes'; $mostrarFormulario=true; require __DIR__.'/../modulo.php';
+header('Location: index.php');
+exit;

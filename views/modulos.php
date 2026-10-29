@@ -1,2 +1,9 @@
 <?php
-return json_decode("{\"clientes\": [\"Clientes\", \"Personas que confían en el taller\", [\"Nombre\", \"Documento\", \"Teléfono\", \"Correo\", \"Dirección\"]], \"vehiculos\": [\"Vehículos\", \"Información e historial de cada vehículo\", [\"Placa\", \"Cliente\", \"Marca\", \"Modelo\", \"Año de fabricación\", \"Color\"]], \"mecanicos\": [\"Mecánicos\", \"Equipo técnico y especialidades\", [\"Nombre\", \"Documento\", \"Especialidad\", \"Teléfono\", \"Correo\"]], \"citas\": [\"Citas\", \"Organiza las próximas visitas al taller\", [\"Vehículo\", \"Mecánico\", \"Fecha y hora\", \"Motivo\", \"Estado\"]], \"ordenes\": [\"Órdenes de trabajo\", \"Seguimiento de las reparaciones\", [\"Número\", \"Vehículo\", \"Cliente\", \"Fecha de ingreso\", \"Kilometraje\", \"Estado\"]], \"diagnosticos\": [\"Diagnósticos\", \"Evaluaciones y fallas detectadas\", [\"Orden\", \"Mecánico\", \"Fecha\", \"Descripción\", \"Observaciones\"]], \"servicios\": [\"Servicios\", \"Catálogo de mantenimiento y reparación\", [\"Nombre\", \"Descripción\", \"Precio base\"]], \"repuestos\": [\"Repuestos\", \"Catálogo de piezas y costos\", [\"Código\", \"Nombre\", \"Descripción\", \"Costo de referencia\", \"Precio de venta\"]], \"pagos\": [\"Pagos\", \"Consulta los abonos de cada orden\", [\"Orden\", \"Monto\", \"Método\", \"Referencia\", \"Fecha de pago\"]], \"reportes\": [\"Reportes\", \"Consulta la actividad y los ingresos del taller\", [\"Tipo de reporte\", \"Desde\", \"Hasta\"]]}", true);
+
+require_once __DIR__ . '/../controller/BaseController.php';
+$modules = [];
+foreach (BaseController::modules() as $key => $module) {
+    $modules[$key] = [$module['title'], $module['description'], array_column($module['fields'], 0)];
+}
+$modules['reportes'] = ['Reportes', 'Consulta la actividad y los ingresos del taller', ['Tipo de reporte', 'Desde', 'Hasta']];
+return $modules;
